@@ -56,7 +56,7 @@ class logistic_score_card(object):
         self.round_num = round_num
 
         # 保存变量结果
-        self.col_type_iv = None  # 计算连续变量离散化后的IV值
+        self.col_type_iv = None  # 各变量类型以及IV值
         self.col_continuous_cut_points = None  # 连续变量的切分点，按小于等于，大于切分，空值单独归位一类，例如:['scorecashon', [-inf, 654.0, 733.0, 754.0, inf]]
         self.col_result = None  # 最终评分卡选择的变量
         self.score_card = None  # 评分卡
@@ -306,7 +306,7 @@ class logistic_score_card(object):
             cut_points = score_card['cut_points'][score_card['col'] == col].tolist()
             score = score_card['score'][score_card['col'] == col].tolist()
             data_score_proba[col_score] = data_discrete[col].replace(cut_points, score)
-        data_score_proba['score'] = data_score_proba.apply(lambda x: x.sum() + score_card['lr_intercept'][0] * b + a,axis=1)
+        data_score_proba['score'] = data_score_proba.sum(axis=1)+ score_card['lr_intercept'][0] * b + a
         data_score_proba['proba'] = 1 - 1 / (1 + np.e ** ((data_score_proba['score'] - a) / b))
         return data_score_proba
 
@@ -357,7 +357,7 @@ class logistic_score_card(object):
         plt.xlabel('label')
         plt.show()
 
-    def plot_col_woe_iv(self, data, col, cut_point=None, is_return=True):
+    def plot_col_woe_iv(self, data, col, cut_point=None, return_data=True):
         data_cut_result = pd.DataFrame()
         if cut_point:
             cut_point = cut_point
@@ -384,5 +384,5 @@ class logistic_score_card(object):
         plt.xticks(x, col_woe_iv['cut_points'])
         plt.legend(loc='upper right')
         plt.show()
-        if is_return == True:
+        if return_data == True:
             return col_woe_iv
