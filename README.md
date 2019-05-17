@@ -5,7 +5,6 @@
 ## Installation
 ```
 pip install CreditScoreModel
-
 ```
 
 ## Basic Usage
@@ -17,6 +16,5 @@ ls=logistic_score_card()
 ls.fit(data) 
 
 ls.score_card 
-
 ```
 
