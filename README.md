@@ -10,14 +10,13 @@ pip install CreditScoreModel
 
 ## Basic Usage
 ```
-from CreditScoreModel.LogisticScoreCard import logistic_score_card #导入包
+from CreditScoreModel.LogisticScoreCard import logistic_score_card 
 
-ls=logistic_score_card() #初始化参数
+ls=logistic_score_card() 
 
-ls.fit(data) #模型训练
+ls.fit(data) 
 
-ls.score_card #制作好的评分卡
+ls.score_card 
 
-ls.logistic_auc_ks 模型准确性
 ```
 
