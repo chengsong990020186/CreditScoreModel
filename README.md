@@ -1,6 +1,6 @@
 # Project description
 
-## CreditScoreModel 
+## [CreditScoreModel](https://pypi.org/project/CreditScoreModel/) 
 
 ## Installation
 ```
