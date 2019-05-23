@@ -276,7 +276,7 @@ class logistic_score_card(object):
 
         data_woe = self.get_data_woe(data_discrete)  # 数据woe化
 
-        col_result = self.get_iv_corr_logistic_l1_col(data_woe, col_iv, min_iv=0.1, max_corr=0.6, C=0.05,penalty='l1')  # 变量筛选
+        col_result = self.get_iv_corr_logistic_l1_col(data_woe, col_iv, min_iv=self.min_iv, max_corr=self.max_corr, C=self.C,penalty=self.penalty)  # 变量筛选
         # -----------------------------------------评分卡制作--------------------------------------------------------------
 
         col_result_continuous_cut_points = [col for col in col_continuous_cut_points if col[0] in col_result]
