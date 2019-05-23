@@ -180,8 +180,8 @@ class logistic_score_card(object):
     # 通过IV值和相关性以及逻辑回归L1选择变量（默认参数提出IV值>=0.1，相关系数>0.6,l1正则筛选的变量）
     def get_iv_corr_logistic_l1_col(self, data_woe, col_iv, min_iv=0.1, max_corr=0.6, C=0.01, penalty='l1'):
         logging.info('根据IV值大于 %s 且 相关性小于 %s ，以及l1正则选取变量进行中。。。' % (min_iv, max_corr))
-        col_filter = [col for col, iv in col_iv if iv > 0.1]
-        col_iv_filter = [[col, iv] for col, iv in col_iv if iv > 0.1]
+        col_filter = [col for col, iv in col_iv if iv > min_iv]
+        col_iv_filter = [[col, iv] for col, iv in col_iv if iv > min_iv]
         data_woe_corr = data_woe[col_filter].corr()
         data_woe_corr_list = data_woe_corr.values.reshape(-1, 1)
         col_iv_result = []
@@ -192,7 +192,7 @@ class logistic_score_card(object):
         data_woe_corr_iv = pd.DataFrame(col_iv_result, columns=['col1', 'col2', 'iv1', 'iv2', 'iv1_iv2'])
         data_woe_corr_iv['corr'] = data_woe_corr_list
         # 剔除相关性较大，而IV值较低的变量
-        col_delete = data_woe_corr_iv['col1'][(data_woe_corr_iv['corr'] < 1) & (data_woe_corr_iv['corr'] > 0.6) & (
+        col_delete = data_woe_corr_iv['col1'][(data_woe_corr_iv['corr'] < 1) & (data_woe_corr_iv['corr'] > max_corr) & (
                 data_woe_corr_iv['iv1_iv2'] < 0)].unique()
         col_filter_result = [col for col in col_filter if col not in (col_delete)]
 
@@ -275,6 +275,7 @@ class logistic_score_card(object):
         col_iv = self.get_iv(data_discrete)  # 各变量IV值
 
         data_woe = self.get_data_woe(data_discrete)  # 数据woe化
+
 
         col_result = self.get_iv_corr_logistic_l1_col(data_woe, col_iv, min_iv=self.min_iv, max_corr=self.max_corr, C=self.C,penalty=self.penalty)  # 变量筛选
         # -----------------------------------------评分卡制作--------------------------------------------------------------
