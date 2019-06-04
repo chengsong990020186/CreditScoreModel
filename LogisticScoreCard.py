@@ -269,28 +269,28 @@ class logistic_score_card(object):
         #     else:
         #         col_cut_points.append([col,'discrete',None])
         logging.info('连续变量最优分组完成！')
+        self.col_continuous_cut_points = col_continuous_cut_points  # 连续变量的切分点，按小于等于，大于切分，空值单独归位一类，例如:['scorecashon', [-inf, 654.0, 733.0, 754.0, inf]]
 
         data_discrete = self.get_cut_result(data, col_continuous_cut_points)  # 按切分点划分数据，得到全部的离散数据
-
         col_iv = self.get_iv(data_discrete)  # 各变量IV值
-
+        col_type_iv = pd.merge(pd.DataFrame(col_types, columns=['col', 'type']),pd.DataFrame(col_iv, columns=['col', 'iv']), on='col', how='left')
+        self.col_type_iv = col_type_iv  # 计算连续变量离散化后的IV值
         data_woe = self.get_data_woe(data_discrete)  # 数据woe化
-
-
         col_result = self.get_iv_corr_logistic_l1_col(data_woe, col_iv, min_iv=self.min_iv, max_corr=self.max_corr, C=self.C,penalty=self.penalty)  # 变量筛选
+        self.col_result = col_result  # 最终评分卡选择的变量
+
         # -----------------------------------------评分卡制作--------------------------------------------------------------
 
         col_result_continuous_cut_points = [col for col in col_continuous_cut_points if col[0] in col_result]
         score_card=self.get_logistic_socre_card(data[col_result + ['y']], col_result_continuous_cut_points, increase_score=self.increase_score, base_score=self.increase_score)
+        self.score_card = score_card  # 评分卡结果
 
         # -----------------------------------------保存结果--------------------------------------------------------------
 
-        col_type_iv = pd.merge(pd.DataFrame(col_types, columns=['col', 'type']),pd.DataFrame(col_iv, columns=['col', 'iv']), on='col', how='left')
-
-        self.col_type_iv = col_type_iv  # 计算连续变量离散化后的IV值
-        self.col_continuous_cut_points = col_continuous_cut_points  # 连续变量的切分点，按小于等于，大于切分，空值单独归位一类，例如:['scorecashon', [-inf, 654.0, 733.0, 754.0, inf]]
-        self.col_result = col_result  # 最终评分卡选择的变量
-        self.score_card = score_card  # 评分卡结果
+        # self.col_type_iv = col_type_iv  # 计算连续变量离散化后的IV值
+        # self.col_continuous_cut_points = col_continuous_cut_points  # 连续变量的切分点，按小于等于，大于切分，空值单独归位一类，例如:['scorecashon', [-inf, 654.0, 733.0, 754.0, inf]]
+        # self.col_result = col_result  # 最终评分卡选择的变量
+        # self.score_card = score_card  # 评分卡结果
 
         logging.info('任务完成！')
 
