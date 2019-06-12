@@ -151,8 +151,8 @@ class logistic_score_card(object):
         result['1_rate'] = result['1_num'] / result['total_num']
         result['woe'] = np.log(result['1_pct'] / result['0_pct'])  # WOE
         result['iv'] = (result['1_pct'] - result['0_pct']) * result['woe']  # IV
-        result['total_iv'] = result['iv'].sum()
         result.replace([-inf, inf], [0, 0], inplace=True)
+        result['total_iv'] = result['iv'].sum()
         result = result.rename(columns={col: "cut_points"})
         return result
 
