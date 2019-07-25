@@ -101,7 +101,7 @@ class logistic_score_card(object):
 
     # ----------------------------------------分箱（决策树）--------------------------------------------------------------------
 
-    def get_descison_tree_cut_point(self, data, col, max_depth=None, max_leaf_nodes=4, min_samples_leaf=0.05):
+    def get_descison_tree_cut_point(self, data, col, max_depth=None, max_leaf_nodes=4, min_samples_leaf=0.05,round_num=2):
         data_notnull = data[[col, 'y']][data[col].notnull()]  # 删除空值
         cut_point = []
         if len(np.unique(data_notnull[col])) > 1:
@@ -119,9 +119,9 @@ class logistic_score_card(object):
 
             for i in threshold:
                 if i != -2:
-                    point = np.round(max(x_num[x_num < i]), 2)  # 取切分点左边的数
+                    point = np.round(max(x_num[x_num < i]), round_num)  # 取切分点左边的数
                     cut_point.extend([point])
-            cut_point = [float(str(i)) for i in cut_point]
+            cut_point = [float(str(i)) for i in list(np.unique(cut_point))]
             cut_point = [-inf] + cut_point + [inf]
         return cut_point
 
@@ -263,7 +263,7 @@ class logistic_score_card(object):
         for col, col_type in tqdm(col_types):
             if col_type == 'continuous':
                 point = self.get_descison_tree_cut_point(data[[col, 'y']], col, self.max_depth, self.max_leaf_nodes,
-                                                         self.min_samples_leaf)
+                                                         self.min_samples_leaf,self.round_num)
                 if point:
                     col_continuous_cut_points.append([col, point])
         #     else:
@@ -363,7 +363,8 @@ class logistic_score_card(object):
         if cut_point:
             cut_point = cut_point
         else:
-            cut_point = self.get_descison_tree_cut_point(data, col)
+            cut_point = self.get_descison_tree_cut_point(data[[col, 'y']], col, self.max_depth, self.max_leaf_nodes,self.min_samples_leaf, self.round_num)
+
         df = pd.DataFrame()
         df['cut_points'] = pd.cut(data[col], cut_point).astype('str').unique()
         df['cut_points_id'] = pd.cut(data[col], cut_point).unique()._codes
